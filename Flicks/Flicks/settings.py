@@ -31,8 +31,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-q5hld86*e152ry&z3w6(8c^pjc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-# Allow local network access for Raspberry Pi deployment
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*']  # Add your Pi's IP later
+# Allow local network access and Render deployment
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*.onrender.com'] + (os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else [])
 
 
 # Application definition
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -90,10 +91,15 @@ WSGI_APPLICATION = "Flicks.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
+        "ENGINE": "django.db.backends.postgresql" if os.getenv('DATABASE_URL') else "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+# Use PostgreSQL if DATABASE_URL is provided (production)
+if os.getenv('DATABASE_URL'):
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
 
 
 # Password validation
