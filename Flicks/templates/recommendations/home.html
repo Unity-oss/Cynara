@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Recommendations - Cynara{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="section-header" style="margin-top: var(--space-8); margin-bottom: var(--space-8);">
+    <h1 class="section-title">Recommendations</h1>
+    <p class="section-subtitle">Movies picked just for you</p>
+  </div>
+
+  {% if user.is_authenticated %}
+    <!-- Personalized Recommendations -->
+    {% if recommended_movies %}
+      <section class="recommendations-section">
+        <h2 class="recommendations-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="vertical-align: middle; margin-right: var(--space-2);">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+          Recommended For You
+        </h2>
+        
+        <div class="movies-grid">
+          {% for movie in recommended_movies %}
+            <div class="movie-card">
+              <div class="movie-poster">
+                <a href="{% url 'movies:detail' movie.slug %}">
+                  <img src="{{ movie.get_poster_url }}" alt="{{ movie.title }} poster" loading="lazy">
+                </a>
+                
+                <div class="movie-actions">
+                  <a href="{% url 'movies:stream' movie.slug %}" class="action-btn primary" title="Watch Now">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5,3 19,12 5,21"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              
+              <div class="movie-info">
+                <h3 class="movie-title">
+                  <a href="{% url 'movies:detail' movie.slug %}">{{ movie.title }}</a>
+                </h3>
+                <div class="movie-meta">
+                  <span class="movie-year">{{ movie.year }}</span>
+                  {% if movie.genres.exists %}
+                    <span class="movie-genre">{{ movie.genres.first.name }}</span>
+                  {% endif %}
+                  {% if movie.user_rating > 0 %}
+                    <span class="movie-rating">★ {{ movie.user_rating|floatformat:1 }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Popular Movies -->
+    {% if popular_movies %}
+      <section class="recommendations-section">
+        <h2 class="recommendations-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="vertical-align: middle; margin-right: var(--space-2);">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Popular Movies
+        </h2>
+        
+        <div class="movies-grid">
+          {% for movie in popular_movies %}
+            <div class="movie-card">
+              <div class="movie-poster">
+                <a href="{% url 'movies:detail' movie.slug %}">
+                  <img src="{{ movie.get_poster_url }}" alt="{{ movie.title }} poster" loading="lazy">
+                </a>
+                
+                <div class="movie-actions">
+                  <a href="{% url 'movies:stream' movie.slug %}" class="action-btn primary" title="Watch Now">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5,3 19,12 5,21"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              
+              <div class="movie-info">
+                <h3 class="movie-title">
+                  <a href="{% url 'movies:detail' movie.slug %}">{{ movie.title }}</a>
+                </h3>
+                <div class="movie-meta">
+                  <span class="movie-year">{{ movie.year }}</span>
+                  {% if movie.genres.exists %}
+                    <span class="movie-genre">{{ movie.genres.first.name }}</span>
+                  {% endif %}
+                  <span class="movie-views">{{ movie.view_count }} view{{ movie.view_count|pluralize }}</span>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Recently Added -->
+    {% if recent_movies %}
+      <section class="recommendations-section">
+        <h2 class="recommendations-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="vertical-align: middle; margin-right: var(--space-2);">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12,6 12,12 16,14"></polyline>
+          </svg>
+          Recently Added
+        </h2>
+        
+        <div class="movies-grid">
+          {% for movie in recent_movies %}
+            <div class="movie-card">
+              <div class="movie-poster">
+                <a href="{% url 'movies:detail' movie.slug %}">
+                  <img src="{{ movie.get_poster_url }}" alt="{{ movie.title }} poster" loading="lazy">
+                </a>
+                
+                <div class="movie-actions">
+                  <a href="{% url 'movies:stream' movie.slug %}" class="action-btn primary" title="Watch Now">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5,3 19,12 5,21"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              
+              <div class="movie-info">
+                <h3 class="movie-title">
+                  <a href="{% url 'movies:detail' movie.slug %}">{{ movie.title }}</a>
+                </h3>
+                <div class="movie-meta">
+                  <span class="movie-year">{{ movie.year }}</span>
+                  {% if movie.genres.exists %}
+                    <span class="movie-genre">{{ movie.genres.first.name }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  {% else %}
+    <!-- Not Authenticated -->
+    <div class="auth-prompt">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--gray-400); margin-bottom: var(--space-4);">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <h2 style="margin-bottom: var(--space-2); color: var(--gray-600);">Sign In for Personalized Recommendations</h2>
+      <p style="color: var(--gray-500); margin-bottom: var(--space-6);">
+        Create an account to get movie recommendations based on your preferences and viewing history.
+      </p>
+      <div class="auth-actions">
+        <a href="{% url 'accounts:login' %}" class="btn btn-primary">
+          Sign In
+        </a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-outline">
+          Create Account
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.recommendations-section {
+  margin-bottom: var(--space-12);
+}
+
+.recommendations-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+}
+
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-6);
+}
+
+.movie-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.movie-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.movie-poster {
+  position: relative;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+}
+
+.movie-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.movie-card:hover .movie-poster img {
+  transform: scale(1.05);
+}
+
+.movie-actions {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.movie-card:hover .movie-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-btn.primary {
+  background: var(--accent);
+  color: white;
+}
+
+.movie-info {
+  padding: var(--space-4);
+}
+
+.movie-title {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.movie-title a {
+  color: var(--gray-900);
+  text-decoration: none;
+}
+
+.movie-title a:hover {
+  color: var(--accent);
+}
+
+.movie-meta {
+  display: flex;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+}
+
+.movie-meta > span:not(:last-child)::after {
+  content: '•';
+  margin-left: var(--space-2);
+}
+
+.auth-prompt {
+  text-align: center;
+  padding: var(--space-16) var(--space-4);
+}
+
+.auth-actions {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-4);
+  }
+  
+  .auth-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>
+{% endblock %}

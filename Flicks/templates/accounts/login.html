@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In - Cynara{% endblock %}
+
+{% block body_class %}login-page{% endblock %}
+
+{% block extra_css %}
+<style>
+  .login-page {
+    background: var(--gradient-primary);
+    min-height: 100vh;
+  }
+
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+  }
+
+  .login-card {
+    background: white;
+    padding: var(--space-8);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .form-group {
+    margin-bottom: var(--space-6);
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-weight: 500;
+    color: var(--accent-dark);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: var(--space-4);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-fast);
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(115, 226, 167, 0.1);
+  }
+
+  .form-error {
+    color: var(--error);
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-2);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <div class="login-card">
+    <!-- Logo -->
+    <div style="text-align: center; margin-bottom: var(--space-8);">
+      <div class="brand-icon" style="margin: 0 auto var(--space-4);">C</div>
+      <h1 style="margin: 0; color: var(--accent-dark);">Welcome Back</h1>
+      <p style="color: var(--gray-600); margin: var(--space-2) 0 0 0;">Sign in to your Cynara account</p>
+    </div>
+
+    <!-- Login Form -->
+    <form method="post">
+      {% csrf_token %}
+      
+      {% if form.errors %}
+        <div class="alert alert-error" style="margin-bottom: var(--space-6);">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              {{ error }}
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="id_username" class="form-label">Username</label>
+        <input type="text" 
+               name="username" 
+               id="id_username"
+               class="form-input"
+               placeholder="Enter your username"
+               value="{{ form.username.value|default:'' }}"
+               required>
+        {% if form.username.errors %}
+          <div class="form-error">{{ form.username.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="id_password" class="form-label">Password</label>
+        <input type="password" 
+               name="password" 
+               id="id_password"
+               class="form-input"
+               placeholder="Enter your password"
+               required>
+        {% if form.password.errors %}
+          <div class="form-error">{{ form.password.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; gap: var(--space-2);">
+        <input type="checkbox" id="remember_me" name="remember_me">
+        <label for="remember_me" style="color: var(--gray-600); font-size: var(--font-size-sm);">
+          Remember me
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+        Sign In
+      </button>
+
+      {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+      {% endif %}
+    </form>
+
+    <!-- Additional Links -->
+    <div style="text-align: center; margin-top: var(--space-6); padding-top: var(--space-6); border-top: 1px solid var(--gray-200);">
+      <p style="color: var(--gray-600); margin-bottom: var(--space-4);">
+        Don't have an account?
+        <a href="{% url 'accounts:register' %}" style="color: var(--primary-dark); font-weight: 500;">
+          Sign up here
+        </a>
+      </p>
+      
+      <a href="{% url 'movies:home' %}" style="color: var(--gray-500); font-size: var(--font-size-sm);">
+        ← Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Focus on username field
+  document.getElementById('id_username').focus();
+  
+  // Add some interactive feedback
+  const inputs = document.querySelectorAll('.form-input');
+  inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+      this.parentElement.style.transform = 'translateY(-2px)';
+    });
+    
+    input.addEventListener('blur', function() {
+      this.parentElement.style.transform = 'translateY(0)';
+    });
+  });
+});
+</script>
+{% endblock %}

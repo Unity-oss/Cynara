@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Cynara{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px; margin-top: var(--space-16);">
+  <div class="card">
+    <div class="card-header text-center">
+      <h2 style="margin: 0; color: var(--primary);">Join Cynara</h2>
+      <p style="margin: var(--space-2) 0 0 0; color: var(--gray-600);">
+        Create your account to start streaming
+      </p>
+    </div>
+    
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" style="margin-bottom: var(--space-4);">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" name="username" id="username" 
+                 class="form-control" 
+                 placeholder="Choose a username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" name="email" id="email" 
+                 class="form-control" 
+                 placeholder="Enter your email address" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password1" class="form-label">Password</label>
+          <input type="password" name="password1" id="password1" 
+                 class="form-control" placeholder="Create a password (min 8 characters)" required>
+          <small class="form-help">Password must be at least 8 characters long</small>
+        </div>
+
+        <div class="form-group">
+          <label for="password2" class="form-label">Confirm Password</label>
+          <input type="password" name="password2" id="password2" 
+                 class="form-control" placeholder="Confirm your password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: var(--space-4);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="margin-right: var(--space-2);">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Create Account
+        </button>
+      </form>
+    </div>
+    
+    <div class="card-footer text-center">
+      <p style="margin: 0; color: var(--gray-600);">
+        Already have an account? 
+        <a href="{% url 'accounts:login' %}" class="signin-link">
+          Sign In
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+.form-group {
+  margin-bottom: var(--space-4);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.form-control {
+  width: 100%;
+  padding: var(--space-3);
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: border-color 0.2s ease;
+  background: white;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(115, 226, 167, 0.1);
+}
+
+.form-control::placeholder {
+  color: var(--gray-400);
+}
+
+.form-help {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+}
+
+.alert {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid;
+}
+
+.alert-error {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.2);
+  color: rgb(153, 27, 27);
+}
+
+.card {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.card-body {
+  padding: var(--space-6);
+}
+
+.card-footer {
+  padding: var(--space-4) var(--space-6);
+  background: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+}
+
+.signin-link {
+  color: var(--accent) !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.signin-link:hover {
+  color: var(--accent-dark) !important;
+  background: rgba(115, 226, 167, 0.1);
+  text-decoration: underline !important;
+}
+
+.alert {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  border-left: 4px solid;
+  font-weight: 500;
+}
+
+.alert-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border-left-color: #dc2626;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-left-color: #16a34a;
+}
+</style>
+{% endblock %}

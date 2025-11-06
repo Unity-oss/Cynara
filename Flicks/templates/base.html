@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cynara - Personal Movie Streaming{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% load static %}{% static 'images/favicon.ico' %}">
+    
+    <!-- CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="{% block description %}Cynara - Your personal movie streaming platform. Watch your collection anywhere, anytime.{% endblock %}">
+    <meta name="author" content="Cynara">
+    <meta name="theme-color" content="#1C7C54">
+    
+    <!-- PWA Meta -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Cynara">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <!-- Navigation -->
+    <nav class="navbar" id="mainNav">
+        <div class="nav-container">
+            <!-- Brand -->
+            <div class="nav-brand">
+                <a href="{% url 'movies:home' %}" class="brand-link">
+                    <div class="brand-icon">C</div>
+                    <span class="brand-text">Cynara</span>
+                </a>
+            </div>
+            
+            <!-- Search -->
+            <div class="nav-search">
+                <form method="GET" action="{% url 'movies:search' %}" class="search-form">
+                    <input type="text" name="q" placeholder="Search movies..." class="search-input" 
+                           value="{{ request.GET.q }}" autocomplete="off">
+                    <button type="submit" class="search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Navigation Links -->
+            <div class="nav-links">
+                <a href="{% url 'movies:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    Home
+                </a>
+                <a href="{% url 'movies:collections' %}" class="nav-link">
+                    Collections
+                </a>
+                <a href="{% url 'recommendations:home' %}" class="nav-link">
+                    For You
+                </a>
+                
+                {% if user.is_authenticated %}
+                    <div class="nav-dropdown">
+                        <button class="nav-user" id="userMenuBtn">
+                            <span>{{ user.get_full_name|default:user.username }}</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="6,9 12,15 18,9"></polyline>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu" id="userMenu">
+                            <a href="{% url 'accounts:profile' %}" class="dropdown-item">Profile</a>
+                            <a href="{% url 'movies:favorites' %}" class="dropdown-item">My Favorites</a>
+                            <a href="{% url 'movies:watch_later' %}" class="dropdown-item">Watch Later</a>
+                            <a href="{% url 'movies:history' %}" class="dropdown-item">History</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'accounts:preferences' %}" class="dropdown-item">Settings</a>
+                            <form method="post" action="{% url 'accounts:logout' %}" style="margin: 0; padding: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left; padding: var(--space-2) var(--space-3); cursor: pointer;">
+                                    Sign Out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-link">Sign In</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm">Sign Up</a>
+                {% endif %}
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible">
+                        {{ message }}
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="brand-icon">C</div>
+                    <div>
+                        <h3>Cynara</h3>
+                        <p>Your personal movie streaming platform</p>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Browse</h4>
+                        <ul>
+                            <li><a href="{% url 'movies:home' %}">All Movies</a></li>
+                            <li><a href="{% url 'movies:collections' %}">Collections</a></li>
+                            <li><a href="{% url 'recommendations:trending' %}">Trending</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Account</h4>
+                        <ul>
+                            {% if user.is_authenticated %}
+                                <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+                                <li><a href="{% url 'accounts:preferences' %}">Settings</a></li>
+                            {% else %}
+                                <li><a href="{% url 'accounts:login' %}">Sign In</a></li>
+                                <li><a href="{% url 'accounts:register' %}">Sign Up</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} Cynara. Designed by UNITY</p>
+                <div class="footer-stats">
+                    {% if stats %}
+                        <span>{{ stats.total_movies }} movies</span>
+                        <span>{{ stats.total_users }} users</span>
+                        <span>{{ stats.total_views }} views</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
